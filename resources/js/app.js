@@ -4,6 +4,9 @@
  * building robust, powerful web applications using Vue and Laravel.
  */
 
+// Import Day.js
+import dayjs from 'dayjs';
+
 require('./bootstrap');
 
 window.Vue = require('vue').default;
@@ -19,7 +22,27 @@ window.Vue = require('vue').default;
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
+Vue.component('superadmin-suppliers-component', require('./components/superadmin/SuppliersComponent.vue').default);
+Vue.component('superadmin-customers-component', require('./components/superadmin/CustomersComponent.vue').default);
+Vue.component('superadmin-categories-component', require('./components/superadmin/CategoriesComponent.vue').default);
+Vue.component('superadmin-products-component', require('./components/superadmin/ProductsComponent.vue').default);
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
+
+// Example of a Vue filter using Day.js (optional)
+Vue.filter('formatDate', function(value, format = 'DD/MM/YYYY') {
+    return dayjs(value).format(format); // This will format the date using Day.js
+});
+
+Vue.filter('toCurrency', function (value) {
+    if (typeof value !== "number") {
+        return value;
+    }
+    var formatter = new Intl.NumberFormat('es-MX', {
+        style: 'currency',
+        currency: 'MXN'
+    });
+    return formatter.format(value);
+});
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

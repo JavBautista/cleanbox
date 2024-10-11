@@ -37,5 +37,43 @@ class HomeController extends Controller
           //  return redirect('/client');
 
         return redirect('/');
+    }//.index()
+
+    public function passwordReset(Request $request){
+        return view('user.reset_password');
+    }//.passwordReset()
+
+    public function updatePassword(Request $request){
+
+        $user_id=$request->user()->id;
+        $user = User::find($user_id);
+        $user->password = Hash::make( $request->input('password') );
+        $user->setRememberToken(Str::random(60));
+        $user->save();
+
+        $this->guard()->login($user);
+
+        /*
+            $request->user()->authorizeRoles(['seller', 'admin', 'buyer']);
+
+            if($request->user()->hasRole('seller'))
+                return redirect('/seller');
+
+            if($request->user()->hasRole('buyer'))
+                return redirect('/buyer');
+
+            if($request->user()->hasRole('admin'))
+                return redirect('/admin');
+
+            return redirect('/');
+            //return view('user.reset_password');
+        */
+        return redirect('/');
+
+    }//.updatePassword()
+
+    protected function guard()
+    {
+        return Auth::guard();
     }
 }
