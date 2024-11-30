@@ -23,6 +23,26 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
+
+    public function catgoriesX(Request $request){
+        $categories = Category::where('active',1)->orderBy('name')->get();
+        return response()->json([
+            'ok'=>true,
+            'data' => $categories,
+        ]);
+
+    }
+    public function productsX(Request $request){
+        $products = Product::where('active', 1)
+            ->inRandomOrder() // Orden aleatorio
+            ->limit(8)
+            ->get();
+        return response()->json([
+            'ok'=>true,
+            'data' => $products,
+        ]);
+    }
+
     public function index(Request $request)
     {
         //dd($request);
