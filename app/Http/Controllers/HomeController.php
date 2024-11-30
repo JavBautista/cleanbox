@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Category;
+use App\Models\Product;
 
 class HomeController extends Controller
 {
@@ -13,7 +15,7 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        //$this->middleware('auth');
     }
 
     /**
@@ -23,8 +25,30 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
-        //return view('home');
+        //dd($request);
+        $categories = Category::with('subcategories')->where('active',1)->orderBy('name')->get();
 
+        $categories2 = Category::with('subcategories')->where('active',1)->limit(6)->get();
+        //dd($categories);
+
+        $products = Product::where('active', 1)
+            ->with(['images' => function ($query) {
+                $query->wherePivot('selected', true); // Carga solo la imagen seleccionada
+            }])
+            ->inRandomOrder() // Orden aleatorio
+            ->limit(8)
+            ->get();
+
+        $products2 = Product::where('active', 1)
+            ->with(['images' => function ($query) {
+                $query->wherePivot('selected', true); // Carga solo la imagen seleccionada
+            }])
+            ->inRandomOrder() // Orden aleatorio
+            ->limit(8)
+            ->get();
+
+        return view('web.index',['categories'=>$categories,'categories2'=>$categories2,'products'=>$products,'products2'=>$products2]);
+/*
         $request->user()->authorizeRoles(['superadmin', 'admin', 'client']);
 
         if($request->user()->hasRole('superadmin'))
@@ -37,6 +61,7 @@ class HomeController extends Controller
           //  return redirect('/client');
 
         return redirect('/');
+        */
     }//.index()
 
     public function passwordReset(Request $request){
@@ -75,5 +100,15 @@ class HomeController extends Controller
     protected function guard()
     {
         return Auth::guard();
+    }
+
+    public function shop(){
+        return view('web.shop');
+    }
+    public function detail(){
+        return view('web.detail');
+    }
+    public function contact(){
+        return view('web.contact');
     }
 }

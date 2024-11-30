@@ -219,10 +219,7 @@
                             <label for="url_video">url_video</label>
                             <input type="text" class="form-control" v-model="url_video" v-bind:readonly="tipoAccion===3">
                           </div>
-
-
                         </div>
-
 
                     </form>
                 </div>

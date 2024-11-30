@@ -13,8 +13,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', [App\Http\Controllers\HomeController::class, 'index']);
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index']);
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/shop', [App\Http\Controllers\HomeController::class, 'shop'])->name('shop');
+Route::get('/detail', [App\Http\Controllers\HomeController::class, 'detail'])->name('detail');
+Route::get('/contact', [App\Http\Controllers\HomeController::class, 'contact'])->name('contact');
+//Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Auth::routes([
     'login'    => true,

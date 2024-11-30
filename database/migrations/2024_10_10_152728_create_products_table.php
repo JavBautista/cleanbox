@@ -16,6 +16,7 @@ class CreateProductsTable extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('category_id');
+            $table->unsignedBigInteger('subcategory_id');
             $table->boolean('active')->default(1);
             $table->string('key');
             $table->string('key_alt');
@@ -23,22 +24,29 @@ class CreateProductsTable extends Migration
             $table->string('name')->nullable();
             $table->text('description')->nullable();
 
-            $table->string('purcahse_unit')->nullable();
-            $table->string('sales_unit')->nullable();
+            $table->string('unit_purcahse')->nullable();
+            $table->string('unit_sale')->nullable();
             $table->string('factor')->nullable();
             $table->boolean('tax')->default(0);
             $table->boolean('net')->default(0);
 
-            $table->decimal('cost',8,2)->nullable();
-            $table->decimal('price_1',8,2)->nullable();
-            $table->decimal('price_2',8,2)->nullable();
-            $table->decimal('price_3',8,2)->nullable();
-            $table->decimal('price_4',8,2)->nullable();
+            $table->decimal('cost',12,4)->nullable();
+            $table->decimal('cost_avg',12,4)->nullable();
+            $table->decimal('margin_1',12,4)->nullable();
+            $table->decimal('margin_2',12,4)->nullable();
+            $table->decimal('margin_3',12,4)->nullable();
+            $table->decimal('margin_4',12,4)->nullable();
+            $table->decimal('price_1',12,4)->nullable();
+            $table->decimal('price_2',12,4)->nullable();
+            $table->decimal('price_3',12,4)->nullable();
+            $table->decimal('price_4',12,4)->nullable();
 
             $table->string('url_video')->nullable();
+            $table->string('slug')->nullable();
             $table->timestamps();
 
             $table->foreign('category_id')->references('id')->on('categories');
+            $table->foreign('subcategory_id')->references('id')->on('subcategories');
         });
     }
 
