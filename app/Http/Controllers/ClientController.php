@@ -1,0 +1,162 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Client;
+use App\Models\User;
+use App\Models\Role;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
+
+class ClientController extends Controller
+{
+     public function index(Request $request)
+    {
+        $user = $request->user();
+
+        $buscar = $request->buscar;
+        if($buscar==''){
+            $clients = Client::where('active',1)
+                    ->orderBy('id','desc')
+                    ->paginate(10);
+        }else{
+            $clients = Client::where('active',1)
+                    ->where('name', 'like', '%'.$buscar.'%')
+                    ->orderBy('id','desc')
+                    ->paginate(10);
+        }
+        return $clients;
+
+    }
+
+    public function verifyUserEmail(Request $request)
+    {
+        $email = $request->email;
+        $existeUsuario = User::where('email', $email)->exists();
+        return response()->json(['existeUsuario' => $existeUsuario]);
+
+    }
+
+    public function storeUserApp(Request $request)
+    {
+        $user = $request->user();
+
+        $client = Client::findOrFail($request->client_id);
+        $name=$client->name;
+        $role_collaborator= Role::where('name', 'client')->first();
+        $new_user = new User();
+        $new_user->active   = 1;
+        $new_user->shop_id  = $shop->id;
+        $new_user->name     = $name;
+        $new_user->email    = $request->email;
+        $new_user->password = Hash::make($request->password);
+        $new_user->save();
+        $new_user->roles()->attach($role_collaborator);
+
+        $client->user_id=$new_user->id;
+        $client->save();
+
+        return response()->json([
+                'ok'=>true,
+                'user' => $new_user,
+        ]);
+
+    }
+
+    public function store(Request $request)
+    {
+        $user = $request->user();
+
+        $client = new Client;
+        $client->active=1;
+        $client->name=$request->name;
+        $client->company=$request->company;
+        $client->email=$request->email;
+        $client->movil=$request->movil;
+        $client->address=$request->address;
+        $client->level=$request->level;
+        $client->save();
+
+        $client_new = Client::findOrFail($client->id);
+        return response()->json([
+                'ok'=>true,
+                'client' => $client_new,
+        ]);
+    }
+
+    public function update(Request $request)
+    {
+        $client = Client::findOrFail($request->id);
+        $client->name=$request->name;
+        $client->company=$request->company;
+        $client->email=$request->email;
+        $client->movil=$request->movil;
+        $client->address=$request->address;
+        $client->level=$request->level;
+        $client->save();
+        return response()->json([
+                'ok'=>true,
+                'client' => $client,
+        ]);
+    }
+
+    public function inactive(Request $request)
+    {
+        $client = Client::findOrFail($request->id);
+        $client->active = 0;
+        $client->save();
+        return response()->json([
+            'ok'=>true
+        ]);
+    }
+
+    public function uploadLocationImageClient(Request $request){
+        //return 'OK';
+        $user = $request->user();
+
+        $clientId = $request->client_id;
+        $client = Client::findOrFail($clientId);
+
+        // Validar la existencia del archivo de imagen
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+
+            // Guardar la imagen en la ubicación 'public'
+            $imagePath = $image->store('clients_locations', 'public');
+            // guadamos  el registro del client
+            $client->location_image = $imagePath;
+            $client->save();
+
+        }
+
+        //$client->load('...');
+        return response()->json([
+            'ok'=>true,
+            'client' => $client
+        ]);
+    }//.uploadLocationImageClient()
+
+    public function deleteLocationImage(Request $request){
+        $user = $request->user();
+        $client_id = $request->id;
+        $client = Client::findOrFail($client_id);
+        // Obtener la ruta de la imagen actual
+        $imagePath = $client->location_image;
+        // Verificar si hay una imagen almacenada y eliminarla
+        if ($imagePath) {
+            // Eliminar la imagen del almacenamiento
+            Storage::disk('public')->delete($imagePath);
+            // Limpiar el atributo de la imagen en el modelo
+            $client->location_image = null;
+            $client->save();
+        }
+
+        //$client->load('...');
+        return response()->json([
+            'ok' => true,
+            'client' => $client
+        ]);
+    }//.deleteLocationImage()
+}

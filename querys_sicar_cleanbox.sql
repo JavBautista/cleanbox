@@ -52,3 +52,9 @@ FROM sicar.imagen
 INSERT INTO cleanbox.product_images (product_id,image_id, selected)
 SELECT art_id, img_id, seleccionada
 FROM sicar.articuloimagen
+
+--
+
+INSERT INTO cleanbox.clients (id, active, name, company, email, phone, movil, address, zip_code, number_out, number_int, district, city, state, rfc, curp, detail)
+SELECT cli_id, status, representante, nombre, mail, telefono, celular, domicilio, codigoPostal, noExt, noInt, colonia,ciudad, estado, rfc, curp, comentario
+FROM sicar.cliente

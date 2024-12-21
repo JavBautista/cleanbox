@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Product extends Model
 {
     use HasFactory;
+    protected $guarded=[];
 
      // Relación con imágenes a través de la tabla pivote `product_images`
     public function images(): BelongsToMany
@@ -21,5 +22,9 @@ class Product extends Model
     public function selectedImage(): ?Image
     {
         return $this->images()->wherePivot('selected', true)->first();
+    }
+
+    public function category(){
+        return $this->belongsTo(Category::class);
     }
 }
